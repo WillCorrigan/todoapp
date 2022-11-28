@@ -5,10 +5,12 @@ const User = require("./db/userModel");
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const auth = require("./auth");
+const cors = require("cors");
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors());
 
 const port = process.env.PORT || 3000;
 
