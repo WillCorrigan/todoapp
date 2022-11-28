@@ -10,8 +10,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const hostname = "127.0.0.1";
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 dbConnect();
 
@@ -106,7 +105,7 @@ app.get("/auth-needed", auth, async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+  console.log("Server running.");
 });
 
 module.exports = app;
