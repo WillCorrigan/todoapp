@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Todos = require("./todoModel");
 
 const UserSchema = new mongoose.Schema({
   email: {
@@ -11,6 +12,12 @@ const UserSchema = new mongoose.Schema({
     required: [true, "Please provide a password."],
     unique: false,
   },
+  todoList: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Todos",
+    },
+  ],
 });
 
 module.exports = mongoose.model.Users || mongoose.model("Users", UserSchema);

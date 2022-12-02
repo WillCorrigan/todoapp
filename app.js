@@ -2,6 +2,7 @@ const dbConnect = require("./db/dbConnect");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const User = require("./db/userModel");
+const Todo = require("./db/todoModel");
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const auth = require("./auth");
@@ -89,6 +90,78 @@ app.post("/login", async (req, res) => {
     .catch((err) => {
       res.status(404).send({
         message: "Email not found.",
+        err,
+      });
+    });
+});
+
+app.get("/todo/list", auth, async (req, res) => {
+  await User.findOne({ email: req.user.userEmail })
+    .populate("todoList")
+    .then((user) => {
+      res.status(200).send({
+        todos: user.todoList,
+      });
+    })
+    .catch((err) => {
+      res.status(400).send({
+        message: "Can't find user",
+        err,
+      });
+    });
+});
+
+app.post("/todo/add", auth, async (req, res) => {
+  await User.findOne({ email: req.user.userEmail })
+    .then((user) => {
+      new Todo({
+        title: req.body.title,
+        completed: req.body.completed,
+        archived: req.body.archived,
+        user: req.user.userId,
+      })
+        .save()
+        .then((todo) => {
+          user.todoList.push(todo);
+          user.save();
+          res.status(200).send({
+            todos: user.todoList,
+          });
+        })
+        .catch((err) => {
+          res.status(400).send({
+            message: "Unable to save todo",
+            err,
+          });
+        });
+    })
+    .catch((err) => {
+      res.status(404).send({
+        message: "Can't find user.",
+        err,
+      });
+    });
+});
+
+app.put("/todo/edit", auth, async (req, res) => {
+  await Todo.findByIdAndUpdate(
+    req.body._id,
+    {
+      title: req.body.title,
+      completed: req.body.completed,
+      archived: req.body.archived,
+    },
+    { new: true }
+  )
+    .then((todo) => {
+      todo.save();
+      res.status(200).send({
+        newTodo: todo,
+      });
+    })
+    .catch((err) => {
+      res.status(400).send({
+        message: "Unable to update todo",
         err,
       });
     });
