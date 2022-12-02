@@ -33,9 +33,19 @@ app.post("/register", async (req, res) => {
       user
         .save()
         .then((result) => {
+          const token = jwt.sign(
+            {
+              userId: user._id,
+              userEmail: user.email,
+            },
+            process.env.JWT_TOKEN,
+            { expiresIn: "24h" }
+          );
+
           res.status(201).send({
             message: "User created successfully",
             result,
+            token,
           });
         })
         .catch((err) => {
