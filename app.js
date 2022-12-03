@@ -135,7 +135,7 @@ app.post("/todo/add", auth, async (req, res) => {
           user.todoList.push(todo);
           user.save();
           res.status(200).send({
-            todos: user.todoList,
+            todo,
           });
         })
         .catch((err) => {
@@ -153,7 +153,7 @@ app.post("/todo/add", auth, async (req, res) => {
     });
 });
 
-app.put("/todo/edit", auth, async (req, res) => {
+app.put("/todo/update", auth, async (req, res) => {
   await Todo.findByIdAndUpdate(
     req.body._id,
     {
